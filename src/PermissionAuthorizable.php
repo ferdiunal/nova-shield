@@ -49,7 +49,7 @@ trait PermissionAuthorizable
      */
     public function authorizeToViewAny(Request $request)
     {
-        if (! static::authorizable($request)) {
+        if (! static::authorizable()) {
             return;
         }
 
@@ -68,7 +68,7 @@ trait PermissionAuthorizable
      */
     public static function authorizedToViewAny(Request $request)
     {
-        if (! static::authorizable($request)) {
+        if (! static::authorizable()) {
             return true;
         }
 
@@ -120,7 +120,7 @@ trait PermissionAuthorizable
      */
     public static function authorizedToCreate(Request $request)
     {
-        if (static::authorizable($request)) {
+        if (static::authorizable()) {
             return static::can($request, 'create');
         }
 
@@ -161,7 +161,7 @@ trait PermissionAuthorizable
      */
     public function authorizeToReplicate(Request $request)
     {
-        if (! static::authorizable($request)) {
+        if (! static::authorizable()) {
             return;
         }
 
@@ -185,7 +185,7 @@ trait PermissionAuthorizable
      */
     public function authorizedToReplicate(Request $request)
     {
-        if (! static::authorizable($request)) {
+        if (! static::authorizable()) {
             return true;
         }
 
@@ -247,7 +247,7 @@ trait PermissionAuthorizable
      */
     public function authorizedToAdd(NovaRequest $request, $model)
     {
-        if (! static::authorizable($request)) {
+        if (! static::authorizable()) {
             return true;
         }
 
@@ -265,7 +265,7 @@ trait PermissionAuthorizable
      */
     public function authorizedToAttachAny(NovaRequest $request, $model)
     {
-        if (! static::authorizable($request)) {
+        if (! static::authorizable()) {
             return true;
         }
 
@@ -283,7 +283,7 @@ trait PermissionAuthorizable
      */
     public function authorizedToAttach(NovaRequest $request, $model)
     {
-        if (! static::authorizable($request)) {
+        if (! static::authorizable()) {
             return true;
         }
 
@@ -302,7 +302,7 @@ trait PermissionAuthorizable
      */
     public function authorizedToDetach(NovaRequest $request, $model, $relationship)
     {
-        if (! static::authorizable($request)) {
+        if (! static::authorizable()) {
             return true;
         }
 
@@ -324,7 +324,7 @@ trait PermissionAuthorizable
             return $this->authorizedToRunDestructiveAction($request, $action);
         }
 
-        if (! static::authorizable($request)) {
+        if (! static::authorizable()) {
             return true;
         }
 
@@ -340,7 +340,7 @@ trait PermissionAuthorizable
      */
     public function authorizedToRunDestructiveAction(NovaRequest $request, DestructiveAction $action)
     {
-        if (! static::authorizable($request)) {
+        if (! static::authorizable()) {
             return true;
         }
 
@@ -379,7 +379,7 @@ trait PermissionAuthorizable
      */
     public function authorizeTo(Request $request, $ability)
     {
-        if (static::authorizable($request)) {
+        if (static::authorizable()) {
             $authorize = new Response(
                 static::can($request, $ability),
                 'You are not authorized to perform this action.',
@@ -399,6 +399,6 @@ trait PermissionAuthorizable
      */
     public function authorizedTo(Request $request, $ability)
     {
-        return static::authorizable($request) ? static::can($request, $ability) : true;
+        return static::authorizable() ? static::can($request, $ability) : true;
     }
 }
