@@ -1,0 +1,32 @@
+{
+    "name": "ferdiunal/nova-shield",
+    "description": "A Laravel Nova tool.",
+    "keywords": [
+        "laravel",
+        "nova"
+    ],
+    "license": "MIT",
+    "require": {
+        "php": "^8.2",
+        "laravel/framework": "^11.0",
+        "laravel/nova": "^4.0",
+        "spatie/laravel-permission": "^6.9"
+    },
+    "autoload": {
+        "psr-4": {
+            "Ferdiunal\\NovaShield\\": "src/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Ferdiunal\\NovaShield\\ToolServiceProvider"
+            ]
+        }
+    },
+    "config": {
+        "sort-packages": true
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
+}
