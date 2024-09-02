@@ -33,9 +33,9 @@ trait PermissionAuthorizable
      *
      * @return bool
      */
-    public static function authorizable(Request $request): bool
+    public static function authorizable(): bool
     {
-        $user = Nova::user($request);
+        $user = Nova::user(request());
         return $user instanceof Authenticatable && $user->roles()->exists();
     }
 
