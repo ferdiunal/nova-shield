@@ -17,24 +17,20 @@ class NovaShield extends Tool
      */
     public function boot()
     {
-        Nova::script('nova-shield', __DIR__ . '/../dist/js/tool.js');
-        Nova::style('nova-shield', __DIR__ . '/../dist/css/tool.css');
+        Nova::script('nova-shield', __DIR__.'/../dist/js/tool.js');
+        Nova::style('nova-shield', __DIR__.'/../dist/css/tool.css');
     }
 
     /**
      * Build the menu that renders the navigation links for the tool.
      *
-     * @param  \Illuminate\Http\Request $request
      * @return mixed
      */
     public function menu(Request $request)
     {
         return MenuSection::make('Nova Shield')
-            // ->path('/nova-shield')
-            ->path('/resources/' . ShieldResource::uriKey())
-            ->canSee(function ($request) {
-                return ShieldResource::authorizedToViewAny($request);
-            })
+            ->path('/resources/'.ShieldResource::uriKey())
+            ->canSee(fn ($request) => ShieldResource::authorizedToViewAny($request))
             ->icon('shield-check');
     }
 }

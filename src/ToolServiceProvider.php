@@ -2,15 +2,15 @@
 
 namespace Ferdiunal\NovaShield;
 
+use Ferdiunal\NovaShield\Http\Middleware\Authorize;
+use Ferdiunal\NovaShield\Http\Nova\ShieldResource;
+use Ferdiunal\NovaShield\Lib\NovaResources;
+use Illuminate\Support\Facades\Context;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
 use Laravel\Nova\Events\ServingNova;
 use Laravel\Nova\Http\Middleware\Authenticate;
 use Laravel\Nova\Nova;
-use Ferdiunal\NovaShield\Http\Middleware\Authorize;
-use Ferdiunal\NovaShield\Http\Nova\ShieldResource;
-use Ferdiunal\NovaShield\Lib\NovaResources;
-use Illuminate\Support\Facades\Context;
 
 class ToolServiceProvider extends ServiceProvider
 {
@@ -43,9 +43,9 @@ class ToolServiceProvider extends ServiceProvider
                     if ($permissions) {
                         $role->syncPermissions(
                             array_map(
-                                fn($permission) => $permissionModel::firstOrCreate([
+                                fn ($permission) => $permissionModel::firstOrCreate([
                                     'name' => $permission,
-                                    'guard_name' => $role->guard_name
+                                    'guard_name' => $role->guard_name,
                                 ]),
                                 $permissions
                             )
@@ -57,7 +57,7 @@ class ToolServiceProvider extends ServiceProvider
         });
 
         Nova::serving(function (ServingNova $event) {
-            ShieldResource::$model = config("permission.models.role");
+            ShieldResource::$model = config('permission.models.role');
             Nova::resources([
                 ShieldResource::class,
             ]);
@@ -67,12 +67,14 @@ class ToolServiceProvider extends ServiceProvider
     public function configuration()
     {
         if (! $this->app->configurationIsCached()) {
-            $this->mergeConfigFrom(__DIR__ . '/../config/nova-shield.php', 'nova-shield');
+            $this->mergeConfigFrom(__DIR__.'/../config/nova-shield.php', 'nova-shield');
         }
 
-        $this->publishes([
-            __DIR__ . '/../config/nova-shield.php' => config_path('nova-shield.php'),
-        ], 'nova-shield-config');
+        if ($this->app->runningInConsole()) {
+            $this->publishes([
+                __DIR__.'/../config/nova-shield.php' => config_path('nova-shield.php'),
+            ], 'nova-shield-config');
+        }
     }
 
     /**
@@ -87,11 +89,11 @@ class ToolServiceProvider extends ServiceProvider
         }
 
         Nova::router(['nova', Authenticate::class, Authorize::class], 'nova-shield')
-            ->group(__DIR__ . '/../routes/inertia.php');
+            ->group(__DIR__.'/../routes/inertia.php');
 
         Route::middleware(['nova', Authorize::class])
             ->prefix('nova-vendor/nova-shield')
-            ->group(__DIR__ . '/../routes/api.php');
+            ->group(__DIR__.'/../routes/api.php');
     }
 
     /**
@@ -101,9 +103,9 @@ class ToolServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        $this->app->singleton(NovaResources::class, fn($app) => new NovaResources(
-            resourcesPath: $app["config"]->get("nova-shield.resources", [
-                app_path('Nova')
+        $this->app->singleton(NovaResources::class, fn ($app) => new NovaResources(
+            resourcesPath: $app['config']->get('nova-shield.resources', [
+                app_path('Nova'),
             ])
         ));
     }

@@ -4,7 +4,6 @@ namespace Ferdiunal\NovaShield;
 
 use Ferdiunal\NovaShield\Lib\NovaResources;
 use Laravel\Nova\Fields\Text as TextFeild;
-use Laravel\Nova\Panel;
 
 class ShieldField extends TextFeild
 {
@@ -15,14 +14,13 @@ class ShieldField extends TextFeild
      */
     public $component = 'nova-shield';
 
-
     public function __construct($name, $attribute = null, $resolveCallback = null)
     {
         parent::__construct($name, $attribute, $resolveCallback);
 
         $this->withMeta([
-            "resources" => app(NovaResources::class)->resources,
-            "enable_teams" => config('permission.teams'),
+            'resources' => app(NovaResources::class)->resources,
+            'enable_teams' => config('permission.teams'),
         ]);
 
         $this->resolveUsing(function ($value) {

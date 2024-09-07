@@ -7,18 +7,17 @@ use Ferdiunal\NovaShield\NovaShieldPanel;
 use Ferdiunal\NovaShield\ShieldField;
 use Laravel\Nova\Fields;
 use Laravel\Nova\Http\Requests\NovaRequest;
-use Laravel\Nova\Panel;
 
 class ShieldResource extends Resource
 {
     /** @var class-string<\Spatie\Permission\Models\Role> */
     public static $model = \Spatie\Permission\Models\Role::class;
 
-    public static $title = "name";
+    public static $title = 'name';
 
     public static $search = [
-        "name",
-        "guard_name",
+        'name',
+        'guard_name',
     ];
 
     public static $displayInNavigation = false;
@@ -27,11 +26,11 @@ class ShieldResource extends Resource
 
     public function fields(NovaRequest $request)
     {
-        $mode = "form";
+        $mode = 'form';
         if ($request->isResourceDetailRequest()) {
-            $mode = "detail";
+            $mode = 'detail';
         } elseif ($request->isResourceIndexRequest()) {
-            $mode = "index";
+            $mode = 'index';
         }
 
         return [
@@ -39,7 +38,7 @@ class ShieldResource extends Resource
             Fields\Text::make('Name')->sortable(),
             Fields\Text::make('Guard Name')->sortable(),
             NovaShieldPanel::make('Permissions', [
-                ShieldField::make('Permissions', 'permissions')
+                ShieldField::make('Permissions', 'permissions'),
             ])->mode($mode),
             Fields\DateTime::make('Created At')->sortable()->exceptOnForms(),
             Fields\DateTime::make('Updated At')->sortable()->exceptOnForms(),

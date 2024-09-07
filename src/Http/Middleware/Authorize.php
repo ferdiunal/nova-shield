@@ -2,8 +2,8 @@
 
 namespace Ferdiunal\NovaShield\Http\Middleware;
 
-use Laravel\Nova\Nova;
 use Ferdiunal\NovaShield\NovaShield;
+use Laravel\Nova\Nova;
 
 class Authorize
 {
