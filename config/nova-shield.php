@@ -4,6 +4,11 @@ return [
     'resources' => [
         app_path('Nova'),
         \Ferdiunal\NovaShield\Http\Nova\ShieldResource::class,
+        // Custom resource: For custom menu items
+        // [
+        //     "name" => "Custom Menu Item",
+        //     "policies" => ["CustomMenuPolicy"] // Add custom menu policies here
+        // ]
     ],
     'policies' => [
         'viewAny',

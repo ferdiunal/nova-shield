@@ -26,7 +26,11 @@ final class NovaResources
     public function sync(): void
     {
         foreach ($this->resourcesPath as $path) {
-            if ($this->hasResource($path)) {
+            if (is_array($path)) {
+                $this->resources[] = $path;
+
+                continue;
+            } elseif ($this->hasResource($path)) {
                 $this->registerResource($path);
 
                 continue;
@@ -71,9 +75,6 @@ final class NovaResources
             );
             $this->resources[] = [
                 'name' => $resource::label(),
-                'uriKey' => $resource::uriKey(),
-                'prefix' => $prefix->toString(),
-                'group' => $resource::group(),
                 'policies' => $policies,
             ];
         }

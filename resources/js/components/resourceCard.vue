@@ -69,12 +69,10 @@ export default {
 <template>
     <div class="ns-flex-none ns-w-full">
         <Card class="ns-snap-start ns-snap-always">
-            <!-- <div
-            class="divide-y ns-bg-white dark:ns-bg-gray-800 divide-gray-200 dark:divide-gray-700 overflow-hidden rounded border border-gray-200 dark:border-gray-700"> -->
             <div
                 class="px-4 py-5 sm:px-6 flex flex-row items-center justify-between border-b border-gray-200 dark:border-gray-700">
-                <label :for="`id_${resource.prefix}`" class="text-lg font-medium">{{ resource.name }}</label>
-                <Switch :disabled="disabled" :id="`id_${resource.prefix}`" v-model="selectAllPolicy" />
+                <label :for="`id_${resource.name}`" class="text-lg font-medium">{{ resource.name }}</label>
+                <Switch :disabled="disabled" :id="`id_${resource.name}`" v-model="selectAllPolicy" />
             </div>
             <div class="ns-px-4 ns-py-5 ns-relative">
                 <div class="ns-pb-10 ns-grid ns-gap-y-2">

@@ -31,6 +31,11 @@ return [
         app_path("Nova"),
         // Or a string class path
         \Ferdiunal\NovaShield\Http\Nova\ShieldResource::class,
+        // Custom resource: For custom menu items
+        // [
+        //     "name" => "Custom Menu Item",
+        //     "policies" => ['CustomMenuPolicy'] // Add custom menu policies here
+        // ]
     ],
     "policies" => [
         // List of policies for the resources
@@ -54,6 +59,40 @@ return [
 ];
 
 ``` 
+
+### Custom Menu Configuration
+
+The main purpose of the package was to manage permissions for Nova Resources, but I realized there was a need for Custom Menu support as well. The necessary development has been completed. You can refer to the usage below for implementing Custom Menus.
+
+```php
+    // app/Providers/NovaServiceProvider.php
+    Nova::mainMenu(function (Request $request) {
+        return [
+            MenuItem::make('Custom Menu Item')
+                ->path('/custom-menu')
+                ->canSee(
+                    function ($request) {
+                        return $request->user()->can('CustomMenuPolicy');
+                    }
+                )
+        ];
+    });
+
+    // ----
+
+    // config/nova-shield.php
+    return [
+        "resources" => [
+            ...
+            // Custom resource: For custom menu items
+            [
+                "name" => "Custom Menu Item",
+                "policies" => ['CustomMenuPolicy'] // Add custom menu policies here
+            ]
+        ]
+    ];
+```
+
 
 Then edit **`App\Nova\Resource.php`** file as follows.
 
