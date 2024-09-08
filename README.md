@@ -87,6 +87,7 @@ The main purpose of the package was to manage permissions for Nova Resources, bu
             // Custom resource: For custom menu items
             [
                 "name" => "Custom Menu Item",
+                "prefix" => "customMenuItem::",
                 "policies" => ['CustomMenuPolicy'] // Add custom menu policies here
             ]
         ]

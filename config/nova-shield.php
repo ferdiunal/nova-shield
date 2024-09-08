@@ -7,6 +7,7 @@ return [
         // Custom resource: For custom menu items
         // [
         //     "name" => "Custom Menu Item",
+        //     "prefix" => "customMenuItem::",
         //     "policies" => ["CustomMenuPolicy"] // Add custom menu policies here
         // ]
     ],
