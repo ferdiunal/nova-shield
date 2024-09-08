@@ -35,7 +35,17 @@ trait PermissionAuthorizable
     {
         $user = Nova::user(request());
 
-        return $user instanceof Authenticatable && $user->roles()->exists();
+        if (! ($user instanceof Authenticatable)) {
+            return false;
+        }
+
+        $user->loadMissing([
+            'roles',
+            'roles.permissions',
+            'permissions',
+        ]);
+
+        return $user->roles->count() > 0;
     }
 
     /**

@@ -113,6 +113,81 @@ abstract class Resource extends NovaResource
 
 ```
 
+## Teams Support
+
+I assume you have done the Teams integration for [Spatie Permission](https://spatie.be/docs/laravel-permission/v6/basic-usage/teams-permissions) and you can follow the setup below for NovaShield.
+
+### Model Integrations
+
+Teams feature differs in each project, please fill in the relevant method according to your project.
+
+```php
+// App\Models\User
+
+use Ferdiunal\NovaShield\Contracts\HasShieldTeam;
+use Illuminate\Foundation\Auth\User as Authenticatable;
+
+class User extends Authenticatable implements HasShieldTeam
+{
+    public function getTeamIdAttribute(): mixed
+    {
+        // return $this->team_id
+    }
+}
+```
+
+### Add Team Field
+
+Considering that the Teams feature will differ in each project, you need to add the team field yourself.
+
+```php
+namespace App\Lib;
+
+use Ferdiunal\NovaShield\Lib\NovaTeamHelperField;
+use Laravel\Nova\Fields\Field;
+use Laravel\Nova\Fields\Select;
+
+class TeamField extends NovaTeamHelperField
+{
+    public static function field(): Field
+    {
+        return Select::make('Teams', 'team_id')
+            ->options([])
+            ->displayUsingLabels()
+            ->searchable()
+            ->sortable();
+    }
+}
+
+```
+
+### Add Middleware to Nova Routes
+
+Add TeamMiddleware to nova routes
+
+```php
+
+return [
+
+    /*
+    |--------------------------------------------------------------------------
+    | Nova Route Middleware
+    |--------------------------------------------------------------------------
+    |
+    | These middleware will be assigned to every Nova route, giving you the
+    | chance to add your own middleware to this stack or override any of
+    | the existing middleware. Or, you can just stick with this stack.
+    |
+    */
+
+    'middleware' => [
+        ....
+        \Ferdiunal\NovaShield\Http\Middleware\TeamMiddleware::class,
+    ],
+];
+
+```
+
 ## ScreenShots
 
 <img src="./art/index-view.png" />

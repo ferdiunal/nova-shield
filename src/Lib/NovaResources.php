@@ -34,6 +34,10 @@ final class NovaResources
                 $this->registerNovaSettingResource($path);
 
                 continue;
+            } elseif ($this->hasResource($path)) {
+                $this->registerNovaResource($path);
+
+                continue;
             } elseif (is_dir($path)) {
                 $files = File::files($path);
                 foreach ($files as $file) {

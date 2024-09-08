@@ -33,15 +33,32 @@ class ShieldResource extends Resource
             $mode = 'index';
         }
 
-        return [
+        return array_filter([
             Fields\ID::make()->sortable(),
             Fields\Text::make('Name')->sortable(),
+            $this->teamField(),
             Fields\Text::make('Guard Name')->sortable(),
             NovaShieldPanel::make('Permissions', [
                 ShieldField::make('Permissions', 'permissions'),
             ])->mode($mode),
             Fields\DateTime::make('Created At')->sortable()->exceptOnForms(),
             Fields\DateTime::make('Updated At')->sortable()->exceptOnForms(),
-        ];
+        ], fn ($field) => $field !== null);
+    }
+
+    public function teamField(): ?Fields\Field
+    {
+        $teamField = config('nova-shield.teamField');
+
+        if (config('permission.teams', false) && method_exists($teamField, 'field')) {
+            $teamField = $teamField::field();
+            if (! ($teamField instanceof Fields\Field)) {
+                $teamField = null;
+            }
+        } else {
+            $teamField = null;
+        }
+
+        return $teamField;
     }
 }

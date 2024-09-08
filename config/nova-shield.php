@@ -11,6 +11,8 @@ return [
         //     "policies" => ["CustomMenuPolicy"] // Add custom menu policies here
         // ]
     ],
+    // 'teamFields' => \App\Lib\TeamField::class,
+
     'policies' => [
         'viewAny',
         'view',
