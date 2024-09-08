@@ -30,16 +30,16 @@ final class NovaResources
                 $this->resources[] = $path;
 
                 continue;
-            } elseif ($this->hasResource($path)) {
-                $this->registerResource($path);
+            } elseif ($this->hasSettingResource($path)) {
+                $this->registerNovaSettingResource($path);
 
                 continue;
-            }
-
-            $files = File::files($path);
-            foreach ($files as $file) {
-                $resource = Str::of($file->getPathname())->explode('.php')->first();
-                $this->registerResource($resource);
+            } elseif (is_dir($path)) {
+                $files = File::files($path);
+                foreach ($files as $file) {
+                    $resource = Str::of($file->getPathname())->explode('.php')->first();
+                    $this->registerResource($resource);
+                }
             }
         }
     }
@@ -56,6 +56,14 @@ final class NovaResources
     }
 
     /**
+     * Checks if the given path contains a valid Nova setting resource class.
+     */
+    public function hasSettingResource(string $path): bool
+    {
+        return class_exists($path) && is_subclass_of($path, \Ferdiunal\NovaSettings\SettingResource::class);
+    }
+
+    /**
      * Registers a resource class by extracting its metadata, such as model name,
      * URI key, policies, and group, and adds it to the $resources array.
      *
@@ -64,18 +72,44 @@ final class NovaResources
     public function registerResource(string $file): void
     {
         $resource = $this->getNamespace($file);
+        $this->registerNovaResource($resource);
+        $this->registerNovaSettingResource($resource);
+    }
 
+    /**
+     * Registers a Nova resource by extracting its metadata and adding it to the $resources array.
+     */
+    public function registerNovaResource(string $resource): void
+    {
         if ($this->hasResource($resource)) {
             /** @var resource $resource */
             $model = class_basename($resource::$model);
             $prefix = str($resource::uriKey())->camel()->append('::');
-            $policies = array_map(
-                fn ($policy) => str($policy)->replace('{Model}', $model)->prepend($prefix)->toString(),
-                config('nova-shield.policies', [])
-            );
+
             $this->resources[] = [
                 'name' => $resource::label(),
-                'policies' => $policies,
+                'prefix' => $prefix,
+                'policies' => array_map(
+                    fn ($policy) => str($policy)->replace('{Model}', $model)->prepend($prefix)->toString(),
+                    config('nova-shield.policies', [])
+                ),
+            ];
+        }
+    }
+
+    /**
+     * Registers a Nova setting resource by extracting its metadata and adding it to the $resources array.
+     */
+    public function registerNovaSettingResource(string $resource): void
+    {
+        if ($this->hasSettingResource($resource)) {
+            $prefix = str($resource::title())->camel()->append('::');
+            $this->resources[] = [
+                'name' => $resource::title(),
+                'prefix' => $prefix->toString(),
+                'policies' => [
+                    $prefix->append('view')->toString(),
+                ],
             ];
         }
     }
