@@ -1,9 +1,43 @@
 {
     "name": "ferdiunal/nova-shield",
-    "description": "A Laravel Nova tool.",
+    "description": "A Laravel Nova package to manage permissions and roles.",
+    "authors": [
+        {
+            "name": "Ferdi Ünal",
+            "email": "ferdiunal@outlook.com",
+            "homepage": "https://gitub.com/ferdiunal",
+            "role": "Developer"
+        }
+    ],
+    "funding": [
+        {
+            "type": "github",
+            "url": "https://github.com/sponsors/ferdiunal"
+        },
+        {
+            "type": "buymeacoffee",
+            "url": "https://buymeacoffee.com/ferdiunal"
+        }
+    ],
+    "repositories": [
+        {
+            "type": "composer",
+            "url": "https://nova.laravel.com"
+        }
+    ],
     "keywords": [
         "laravel",
-        "nova"
+        "nova",
+        "shield",
+        "permissions",
+        "roles",
+        "nova-shield",
+        "nova-permissions",
+        "nova-roles",
+        "spatie",
+        "laravel-permission",
+        "nova-tool",
+        "spatie-permission"
     ],
     "license": "MIT",
     "require": {
