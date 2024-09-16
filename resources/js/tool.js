@@ -4,6 +4,7 @@ import IndexField from "./fields/IndexField.vue";
 import Panel from "./components/panel.vue";
 
 Nova.booting((app, store) => {
+    console.log(window.Nova.__)
   app.component("FormNovaShieldPanel", Panel);
   app.component("DetailNovaShieldPanel", Panel);
 

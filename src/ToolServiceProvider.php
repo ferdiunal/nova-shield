@@ -6,6 +6,7 @@ use Ferdiunal\NovaShield\Http\Middleware\Authorize;
 use Ferdiunal\NovaShield\Http\Nova\ShieldResource;
 use Ferdiunal\NovaShield\Lib\NovaResources;
 use Illuminate\Support\Facades\Context;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
 use Laravel\Nova\Events\ServingNova;
@@ -58,10 +59,23 @@ class ToolServiceProvider extends ServiceProvider
 
         Nova::serving(function (ServingNova $event) {
             ShieldResource::$model = config('permission.models.role');
+            $this->translations();
             Nova::resources([
                 ShieldResource::class,
             ]);
         });
+    }
+
+    protected function translations()
+    {
+        $langs = $this->app['config']->get('nova-shield.langs', []);
+        $locale = $this->app->getLocale();
+
+        foreach ($langs as $lang) {
+            if (File::exists($lang) && File::isFile($lang) && File::extension($lang) === 'json' && str($lang)->contains("/$locale/")) {
+                Nova::translations($lang);
+            }
+        }
     }
 
     public function configuration()

@@ -1,7 +1,9 @@
 <script>
 import Switch from './switch.vue';
+import { Localization } from 'laravel-nova'
 
 export default {
+    mixins: [Localization],
     props: {
         policy: {
             type: String,
@@ -45,7 +47,7 @@ export default {
 </script>
 <template>
     <label class="flex flex-row flex-wrap justify-between items-center">
-        <span class="flex-none ns-font-bold">{{ policy }}</span>
+        <span class="flex-none ns-font-bold">{{ __(policy) }}</span>
         <span>
             <Switch :disabled="disabled" class="grow" v-model="value" />
         </span>
