@@ -56,6 +56,10 @@ return [
         "attachAny{Model}",
         "detach{Model}",
     ],
+    "langs" => [
+        // lang_path('en/nova-shield.json'),
+        // base_path('langs/en/nova-shield.json'),
+    ]
 ];
 
 ``` 
