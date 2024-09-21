@@ -5,6 +5,7 @@ namespace Ferdiunal\NovaShield;
 use Ferdiunal\NovaShield\Http\Middleware\Authorize;
 use Ferdiunal\NovaShield\Http\Nova\ShieldResource;
 use Ferdiunal\NovaShield\Lib\NovaResources;
+use Ferdiunal\NovaShield\Lib\SuperAdmin;
 use Illuminate\Support\Facades\Context;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Route;
@@ -22,35 +23,37 @@ class ToolServiceProvider extends ServiceProvider
      */
     public function boot()
     {
+
         $this->app->booted(function () {
-            $this->configuration();
             $this->routes();
+            $this->registerMigrations();
+            $this->configuration();
+
+            if ($this->app->runningInConsole()) {
+                $this->commands([
+                    Commands\MakeSuperAdminCommand::class,
+                    Commands\SuperAdminSyncPermissions::class,
+                ]);
+            }
+
             /**
              * @var \Spatie\Permission\Models\Role $roleModel
-             * @var \Spatie\Permission\Models\Permission $permissionModel
              */
-            $roleModel = config('permission.models.role');
-            $permissionModel = config('permission.models.permission');
+            $roleModel = SuperAdmin::roleModel();
 
             if (class_exists($roleModel)) {
                 $roleModel::saving(function ($role) {
                     $permissions = $role['permissions'] ?? [];
-                    unset($role['permissions']);
-                    Context::add('permissions', $permissions);
+                    if (! empty($permissions)) {
+                        unset($role['permissions']);
+                        Context::add('permissions', $permissions);
+                    }
                 });
 
-                $roleModel::saved(function ($role) use (&$permissionModel) {
+                $roleModel::saved(function ($role) {
                     $permissions = Context::get('permissions', []);
-                    if ($permissions) {
-                        $role->syncPermissions(
-                            array_map(
-                                fn ($permission) => $permissionModel::firstOrCreate([
-                                    'name' => $permission,
-                                    'guard_name' => $role->guard_name,
-                                ]),
-                                $permissions
-                            )
-                        );
+                    if (! empty($permissions)) {
+                        $role->syncPermissions($permissions);
                         Context::flush();
                     }
                 });
@@ -64,6 +67,22 @@ class ToolServiceProvider extends ServiceProvider
                 ShieldResource::class,
             ]);
         });
+    }
+
+    /**
+     * Register migrations for the package.
+     *
+     * @return void
+     */
+    protected function registerMigrations()
+    {
+        if ($this->app->runningInConsole()) {
+            $this->loadMigrationsFrom(__DIR__.'/../database/migrations');
+
+            $this->publishes([
+                __DIR__.'/../database/migrations' => database_path('migrations'),
+            ], 'nova-shield-migrations');
+        }
     }
 
     protected function translations()

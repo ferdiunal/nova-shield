@@ -18,51 +18,91 @@ Optionally, you can publish the configuration file using this command:
 php artisan vendor:publish --tag nova-shield-config
 ```
 
+Then let's run the migration commands required by the package below.
+
+```bash
+php artisan vendor:publish --tag nova-shield-migrations
+php artisan migrate
+````
+
 In the config file, you can control resource permissions by specifying the resources parameter with either the path to the Nova resources folder or a string class path. 
 
 For example, in the code below, we define the resources and their corresponding policies:
+
+<details>
+  <summary>Show Code </summary>
 
 ```php
 <?php
 
 return [
-    "resources" => [
-        // Nova resources folder path
-        app_path("Nova"),
-        // Or a string class path
+    /**
+     * Specify the resources that will be used in the project.
+     * If you want to use custom resources, you can add them to the list.
+     */
+    'resources' => [
+        app_path('Nova'),
         \Ferdiunal\NovaShield\Http\Nova\ShieldResource::class,
         // Custom resource: For custom menu items
         // [
         //     "name" => "Custom Menu Item",
-        //     "policies" => ['CustomMenuPolicy'] // Add custom menu policies here
+        //     "prefix" => "customMenuItem::",
+        //     "policies" => ["CustomMenuPolicy"] // Add custom menu policies here
         // ]
     ],
-    "policies" => [
-        // List of policies for the resources
-        "viewAny",
-        "view",
-        "create",
-        "update",
-        "replicate",
-        "delete",
-        "restore",
-        "forceDelete",
-        "runAction",
-        "runDestructiveAction",
-        "canImpersonate",
-        "canBeImpersonated",
-        "add{Model}",
-        "attach{Model}",
-        "attachAny{Model}",
-        "detach{Model}",
+
+    // 'teamFields' => \App\Lib\TeamField::class,
+
+    /**
+     * Constant policies of Laravel Nova
+     */
+    'policies' => [
+        'viewAny',
+        'view',
+        'create',
+        'update',
+        'replicate',
+        'delete',
+        'restore',
+        'forceDelete',
+        'runAction',
+        'runDestructiveAction',
+        'canImpersonate',
+        'canBeImpersonated',
+        'add{Model}',
+        'attach{Model}',
+        'attachAny{Model}',
+        'detach{Model}',
     ],
-    "langs" => [
+
+    /**
+     * Specify the file path of each language files for authorisations.
+     */
+    'langs' => [
         // lang_path('en/nova-shield.json'),
         // base_path('langs/en/nova-shield.json'),
-    ]
+    ],
+
+    /**
+     * Default Super admin role name and guard
+     */
+    'superAdmin' => [
+        'name' => 'super-admin',
+        'guard' => 'web',
+    ],
+
+    'hooks' => [
+        /**
+         * When matching permissions with roles, upsert is used by default.
+         * If you are using custom ID types like UUID or ULID, you need to include them in the upsert operation.
+         * Therefore, you can write and use a query that suits your project needs.
+         */
+        'permission' => \Ferdiunal\NovaShield\Lib\DefaultPermissionHook::class,
+    ],
 ];
 
-``` 
+```
+</details>
 
 ### Custom Menu Configuration
 
@@ -191,6 +231,91 @@ return [
 ];
 
 ```
+
+## Commands
+
+The package contains two different commands. The first command checks whether the Super Admin role exists, creates it if it doesn’t, and assigns permissions to the resources specified in the configuration file. The second command is used to assign the Super Admin role to users.
+
+Sync Super Admin role and permissions command:
+
+```bash
+php artisan artisan nova-shield:sync-super-admin
+```
+
+Assign Super Admin role to user(s) command:
+
+```bash
+php artisan nova-shield:super-admin
+```
+
+### Hook Sync Permissions
+When mapping permissions to roles, upsert is used by default. If you use custom ID types such as UUID or ULID, upsert does not identify these ids. Therefore, you can write and use a query that suits your project needs.
+
+**Example hook**:
+
+```php
+// app/SyncPermissionHook.php
+
+<?php
+
+namespace App;
+
+use Ferdiunal\NovaShield\Contracts\SyncPermissionHook as SyncPermissionHookContract;
+use Illuminate\Support\LazyCollection;
+use Illuminate\Support\Str;
+use Spatie\Permission\Contracts\Role;
+use Spatie\Permission\Models\Permission;
+
+class SyncPermissionHook implements SyncPermissionHookContract
+{
+    /**
+     * Sync permissions to a role
+     *
+     * @param  array<int,string>  $permissions
+     * @return void
+     */
+    public function __invoke(Role $role, $permissions)
+    {
+        Permission::query()->upsert(
+            LazyCollection::make($permissions)
+                ->map(function ($permission) use (&$role) {
+                    return [
+                        'id' => Str::uuid(),
+                        'name' => $permission,
+                        'guard_name' => $role->guard_name,
+                        'created_at' => now(),
+                        'updated_at' => now(),
+                    ];
+                })->toArray(),
+            ['name', 'guard_name'],
+            ['name', 'guard_name'],
+        );
+
+        $role->syncPermissions($permissions);
+    }
+}
+
+```
+
+You will then need to replace the class you created in the configuration file with the default.
+
+**Example**:
+```php
+// config/nova-shield.php
+
+return [
+    'hooks' => [
+        /**
+         * When matching permissions with roles, upsert is used by default.
+         * If you are using custom ID types like UUID or ULID, you need to include them in the upsert operation.
+         * Therefore, you can write and use a query that suits your project needs.
+         */
+        'permission' => \App\SyncPermissionHook::class,
+    ],
+];
+
+```
+
 
 ## ScreenShots
 
