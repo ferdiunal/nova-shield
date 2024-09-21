@@ -12,11 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('permissions', function (Blueprint $table) {
-            $schemaManager = Schema::getConnection()->getDoctrineSchemaManager();
-            $doctrineTable = $schemaManager->listTableIndexes('permissions');
-            if (! array_key_exists('permissions_name_guard_name_unique', $doctrineTable)) {
-                $table->unique(['name', 'guard_name']);
-            }
+            $table->unique(['name', 'guard_name']);
         });
     }
 
@@ -26,11 +22,7 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('permissions', function (Blueprint $table) {
-            $schemaManager = Schema::getConnection()->getDoctrineSchemaManager();
-            $doctrineTable = $schemaManager->listTableIndexes('permissions');
-            if (! array_key_exists('permissions_name_guard_name_unique', $doctrineTable)) {
-                $table->dropUnique(['name', 'guard_name']);
-            }
+            $table->dropUnique(['name', 'guard_name']);
         });
     }
 };
