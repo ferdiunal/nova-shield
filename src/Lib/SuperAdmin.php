@@ -86,10 +86,12 @@ class SuperAdmin
         [$name, $guard] = self::defaults();
         $role = $this->getSuperAdminRole();
         if (! $role) {
-            self::roleModel()::query()->createQuietly([
+            $model = app(self::roleModel());
+            $model->forceFill([
                 'name' => $name,
                 'guard_name' => $guard,
             ]);
+            $model->saveQuietly();
 
             $role = $this->getSuperAdminRole();
         }
