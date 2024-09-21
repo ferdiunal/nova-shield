@@ -5,7 +5,7 @@ namespace Ferdiunal\NovaShield\Lib;
 use Ferdiunal\NovaShield\Contracts\SyncPermissionHook as SyncPermissionHookContract;
 use Illuminate\Support\LazyCollection;
 use Spatie\Permission\Models\Permission;
-use Spatie\Permission\Models\Role;
+use Spatie\Permission\Contracts\Role;
 
 class DefaultPermissionHook implements SyncPermissionHookContract
 {
