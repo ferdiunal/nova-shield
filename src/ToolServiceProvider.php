@@ -23,10 +23,8 @@ class ToolServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-
         $this->app->booted(function () {
             $this->routes();
-            $this->registerMigrations();
             $this->configuration();
 
             if ($this->app->runningInConsole()) {
@@ -37,7 +35,7 @@ class ToolServiceProvider extends ServiceProvider
             }
 
             /**
-             * @var \Spatie\Permission\Models\Role $roleModel
+             * @var \Spatie\Permission\Contracts\Role $roleModel
              */
             $roleModel = SuperAdmin::roleModel();
 
@@ -67,22 +65,6 @@ class ToolServiceProvider extends ServiceProvider
                 ShieldResource::class,
             ]);
         });
-    }
-
-    /**
-     * Register migrations for the package.
-     *
-     * @return void
-     */
-    protected function registerMigrations()
-    {
-        if ($this->app->runningInConsole()) {
-            $this->loadMigrationsFrom(__DIR__.'/../database/migrations');
-
-            $this->publishes([
-                __DIR__.'/../database/migrations' => database_path('migrations'),
-            ], 'nova-shield-migrations');
-        }
     }
 
     protected function translations()

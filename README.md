@@ -18,13 +18,6 @@ Optionally, you can publish the configuration file using this command:
 php artisan vendor:publish --tag nova-shield-config
 ```
 
-Then let's run the migration commands required by the package below.
-
-```bash
-php artisan vendor:publish --tag nova-shield-migrations
-php artisan migrate
-````
-
 In the config file, you can control resource permissions by specifying the resources parameter with either the path to the Nova resources folder or a string class path. 
 
 For example, in the code below, we define the resources and their corresponding policies:
